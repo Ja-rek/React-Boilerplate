@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-
+import { useState } from "react";
 import { useAppSelector, useAppDispatch } from "../../app/hooks";
 import {
   decrement,
@@ -8,64 +7,87 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
+  selectCountStatus,
 } from "./counterSlice";
-import styles from "./Counter.module.css";
-import { Button } from "@mui/material";
+import { Button, ButtonProps, TextField, styled } from "@mui/material";
+import { Save } from "@mui/icons-material";
+
+//pass parameters
+const ParrameterButtton = styled(
+  ({ test, ...p }: ButtonProps<"button"> & { test: string }) => (
+    <Button {...p} />
+  )
+)`
+  ${(p) => p.test}
+`;
+
+const StyledButton = styled(Button)`
+  background: ${(p) => p.theme.palette.primary.main};
+  color: ${(p) => p.theme.palette.text.primary};
+  font-size: ${(p) => p.theme.spacing(3.5)};
+  :hover {
+    background: ${(p) => p.theme.palette.secondary.main};
+  }
+`;
+
+const Row = styled("div")`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: ${(p) => p.theme.spacing(2)};
+  margin: ${(p) => p.theme.spacing(1)};
+`;
 
 export function Counter() {
   const count = useAppSelector(selectCount);
+  const status = useAppSelector(selectCountStatus);
   const dispatch = useAppDispatch();
-  const [incrementAmount, setIncrementAmount] = useState("2");
 
+  const [incrementAmount, setIncrementAmount] = useState("2");
   const incrementValue = Number(incrementAmount) || 0;
 
   console.log("test");
 
   return (
-    <div>
-      <div className={styles.row}>
-        <Button
-          className={styles.button}
+    <>
+      <Row>
+        <ParrameterButtton test={"test"}>test</ParrameterButtton>
+        <StyledButton
           aria-label="Decrement value"
           onClick={() => dispatch(decrement())}
         >
           -
-        </Button>
-        <span className={styles.value}>{count}</span>
-        <button
-          className={styles.button}
+        </StyledButton>
+        <TextField value={count} />
+        <StyledButton
           aria-label="Increment value"
           onClick={() => dispatch(increment())}
         >
           +
-        </button>
-      </div>
-      <div className={styles.row}>
-        <input
-          className={styles.textbox}
+        </StyledButton>
+      </Row>
+      <Row>
+        <TextField
           aria-label="Set increment amount"
           value={incrementAmount}
           onChange={(e) => setIncrementAmount(e.target.value)}
-        />{" "}
-        <button
-          className={styles.button}
+        />
+        <StyledButton
           onClick={() => dispatch(incrementByAmount(incrementValue))}
         >
           Add Amount
-        </button>
-        <button
-          className={styles.asyncButton}
+        </StyledButton>
+        <StyledButton
+          disabled={status === "loading"}
+          startIcon={status === "loading" && <Save />}
           onClick={() => dispatch(incrementAsync(incrementValue))}
         >
           Add Async
-        </button>
-        <button
-          className={styles.button}
-          onClick={() => dispatch(incrementIfOdd(incrementValue))}
-        >
+        </StyledButton>
+        <StyledButton onClick={() => dispatch(incrementIfOdd(incrementValue))}>
           Add If Odd
-        </button>
-      </div>
-    </div>
+        </StyledButton>
+      </Row>
+    </>
   );
 }
